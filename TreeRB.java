@@ -79,16 +79,16 @@ public class TreeRB<T extends Comparable<T>> {
             return right != null;
         }
 
+        public boolean hasBoth() {
+            return left != null && right != null;
+        }
+
         public boolean isLeft() {
             return parent != null && this == parent.left;
         }
 
         public boolean isRight() {
             return parent != null && this == parent.right;
-        }
-
-        public boolean hasBoth() {
-            return left != null && right != null;
         }
 
         @Override
@@ -108,7 +108,6 @@ public class TreeRB<T extends Comparable<T>> {
 
     // Methods - CRUD
     public void insert(T data) {
-        Node newNode = new Node(data);
         Node current = root;
         Node parent = null;
 
@@ -124,6 +123,7 @@ public class TreeRB<T extends Comparable<T>> {
             }
         }
 
+        Node newNode = new Node(data);
         newNode.setParent(parent);
         if (parent == null) {
             root = newNode;

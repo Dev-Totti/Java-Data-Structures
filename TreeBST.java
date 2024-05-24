@@ -1,9 +1,9 @@
 public class TreeBST<T extends Comparable<T>> {
     // Node - Subclass
     public class Node {
-        public T data;
-        public Node left;
-        public Node right;
+        private T data;
+        private Node left;
+        private Node right;
 
         public Node(T data) {
             this.data = data;
