@@ -11,35 +11,35 @@ public class StackLinkedList<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.top == -1;
+        return top == -1;
     }
 
     public int size() {
-        return this.top + 1;
+        return top + 1;
     }
 
     public void push(T data) {
-        this.stack.add(data);
-        this.top++;
+        stack.add(data);
+        top++;
     }
 
     public T pop() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        return this.stack.remove(this.top--);
+        return stack.remove(top--);
     }
 
     public T peek() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        return this.stack.get(this.top);
+        return stack.get(top);
     }
 
     @Override
     public String toString() {
-        return this.stack.toString();
+        return stack.toString();
     }
 
 }

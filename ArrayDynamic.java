@@ -4,7 +4,7 @@ public class ArrayDynamic<T> {
     private int capacity;
     private T[] array;
 
-    // Constructor
+    // Constructors
     @SuppressWarnings("unchecked")
     public ArrayDynamic() {
         this.size = 0;
@@ -21,22 +21,22 @@ public class ArrayDynamic<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public boolean isFull() {
-        return this.size == this.capacity;
+        return size == capacity;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     @SuppressWarnings("unchecked")
     public void ensureCapacity() {
         if (isFull()) {
-            this.capacity *= 2;
-            T[] newArray = (T[]) new Object[this.capacity];
+            capacity *= 2;
+            T[] newArray = (T[]) new Object[capacity];
             for (int i = 0; i < size; i++) {
                 newArray[i] = array[i];
             }

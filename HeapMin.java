@@ -9,20 +9,20 @@ public class HeapMin<T extends Comparable<T>> {
 
     // Methods
     public boolean isEmpty() {
-        return this.heap.isEmpty();
+        return heap.isEmpty();
     }
 
     public int size() {
-        return this.heap.size();
+        return heap.size();
     }
 
     public T get(int index) {
-        return this.heap.get(index);
+        return heap.get(index);
     }
 
     public int findIndex(T data) {
         for (int i = 0; i < size(); i++) {
-            if (this.get(i).equals(data)) {
+            if (get(i).equals(data)) {
                 return i;
             }
         }
@@ -30,15 +30,15 @@ public class HeapMin<T extends Comparable<T>> {
     }
 
     public void add(T data) {
-        this.heap.add(data);
-        this.heapifyUp(size() - 1);
+        heap.add(data);
+        heapifyUp(size() - 1);
     }
 
     public T peek() {
         if (isEmpty()) {
             return null;
         }
-        return this.get(0);
+        return get(0);
     }
 
     public T poll() {
@@ -46,10 +46,10 @@ public class HeapMin<T extends Comparable<T>> {
             return null;
         }
 
-        T data = this.get(0);
-        this.heap.set(0, get(size() - 1));
-        this.heap.remove(size() - 1);
-        this.heapifyDown(0);
+        T data = get(0);
+        heap.set(0, get(size() - 1));
+        heap.remove(size() - 1);
+        heapifyDown(0);
         return data;
     }
 
@@ -59,19 +59,19 @@ public class HeapMin<T extends Comparable<T>> {
             return;
         }
 
-        this.heap.set(index, get(size() - 1));
-        this.heap.remove(size() - 1);
+        heap.set(index, get(size() - 1));
+        heap.remove(size() - 1);
 
-        if (this.get(index).compareTo(getParent(index)) < 0) {
-            this.heapifyUp(index);
+        if (get(index).compareTo(getParent(index)) < 0) {
+            heapifyUp(index);
         } else {
-            this.heapifyDown(index);
+            heapifyDown(index);
         }
     }
 
     // Heapify methods
     public void heapifyUp(int index) {
-        while (hasParent(index) && getParent(index).compareTo(this.get(index)) > 0) {
+        while (hasParent(index) && getParent(index).compareTo(get(index)) > 0) {
             swap(getParentIndex(index), index);
             index = getParentIndex(index);
         }
@@ -84,7 +84,7 @@ public class HeapMin<T extends Comparable<T>> {
                 smallerChildIndex = getRightChildIndex(index);
             }
 
-            if (this.get(index).compareTo(this.get(smallerChildIndex)) < 0) {
+            if (get(index).compareTo(get(smallerChildIndex)) < 0) {
                 break;
             } else {
                 swap(index, smallerChildIndex);
@@ -120,26 +120,26 @@ public class HeapMin<T extends Comparable<T>> {
     }
 
     public T getParent(int index) {
-        return this.get(getParentIndex(index));
+        return get(getParentIndex(index));
     }
 
     public T getLeftChild(int index) {
-        return this.get(getLeftChildIndex(index));
+        return get(getLeftChildIndex(index));
     }
 
     public T getRightChild(int index) {
-        return this.get(getRightChildIndex(index));
+        return get(getRightChildIndex(index));
     }
 
     public void swap(int index1, int index2) {
-        T temp = this.get(index1);
-        this.heap.set(index1, this.get(index2));
-        this.heap.set(index2, temp);
+        T temp = get(index1);
+        heap.set(index1, get(index2));
+        heap.set(index2, temp);
     }
 
     @Override
     public String toString() {
-        return this.heap.toString();
+        return heap.toString();
     }
 
 }

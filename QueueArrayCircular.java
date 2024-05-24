@@ -25,15 +25,15 @@ public class QueueArrayCircular<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public boolean isFull() {
-        return this.size == this.capacity;
+        return size == capacity;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public void enqueue(T data) {
@@ -41,9 +41,9 @@ public class QueueArrayCircular<T> {
             System.out.println("Queue is full");
             return;
         }
-        this.queue.set(this.rear, data);
-        this.rear = (this.rear + 1) % this.capacity;
-        this.size++;
+        queue.set(rear, data);
+        rear = (rear + 1) % capacity;
+        size++;
     }
 
     public T dequeue() {
@@ -51,9 +51,9 @@ public class QueueArrayCircular<T> {
             System.out.println("Queue is empty");
             return null;
         }
-        T data = this.queue.get(this.front);
-        this.front = (this.front + 1) % this.capacity;
-        this.size--;
+        T data = queue.get(front);
+        front = (front + 1) % capacity;
+        size--;
         return data;
     }
 
@@ -62,15 +62,15 @@ public class QueueArrayCircular<T> {
             System.out.println("Queue is empty");
             return null;
         }
-        return this.queue.get(this.front);
+        return queue.get(front);
     }
 
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for (int i = 0; i < this.size; i++) {
-            sb.append(this.queue.get((this.front + i) % this.capacity));
-            if (i < this.size - 1) {
+        for (int i = 0; i < size; i++) {
+            sb.append(queue.get((front + i) % capacity));
+            if (i < size - 1) {
                 sb.append(", ");
             }
         }

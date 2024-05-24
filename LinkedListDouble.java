@@ -14,15 +14,15 @@ public class LinkedListDouble<T> {
 
         // Node - Getters
         public T getData() {
-            return this.data;
+            return data;
         }
 
         public Node getNext() {
-            return this.next;
+            return next;
         }
 
         public Node getPrev() {
-            return this.prev;
+            return prev;
         }
 
         // Node - Setters
@@ -59,16 +59,16 @@ public class LinkedListDouble<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public LinkedListDouble<T> getReversed() {
         LinkedListDouble<T> reversed = new LinkedListDouble<>();
-        Node current = this.tail;
+        Node current = tail;
         while (current != null) {
             reversed.append(current.getData());
             current = current.getPrev();
@@ -81,40 +81,40 @@ public class LinkedListDouble<T> {
             return;
         }
         Node temp = null;
-        Node current = this.head;
+        Node current = head;
         while (current != null) {
             temp = current.getPrev();
             current.setPrev(current.getNext());
             current.setNext(temp);
             current = current.getPrev();
         }
-        temp = this.head;
-        this.head = this.tail;
-        this.tail = temp;
+        temp = head;
+        head = tail;
+        tail = temp;
     }
 
     public void prepend(T data) {
         Node newNode = new Node(data);
-        newNode.setNext(this.head);
-        if (this.head != null) {
-            this.head.setPrev(newNode);
+        newNode.setNext(head);
+        if (head != null) {
+            head.setPrev(newNode);
         } else {
-            this.tail = newNode;
+            tail = newNode;
         }
-        this.head = newNode;
-        this.size++;
+        head = newNode;
+        size++;
     }
 
     public void append(T data) {
         Node newNode = new Node(data);
-        newNode.setPrev(this.tail);
-        if (this.tail != null) {
-            this.tail.setNext(newNode);
+        newNode.setPrev(tail);
+        if (tail != null) {
+            tail.setNext(newNode);
         } else {
-            this.head = newNode;
+            head = newNode;
         }
-        this.tail = newNode;
-        this.size++;
+        tail = newNode;
+        size++;
     }
 
     public void add(T data) {
@@ -122,7 +122,7 @@ public class LinkedListDouble<T> {
     }
 
     public void insert(int index, T data) {
-        if (index < 0 || index > this.size) {
+        if (index < 0 || index > size) {
             System.out.println("Index out of bounds");
             return;
         }
@@ -130,11 +130,11 @@ public class LinkedListDouble<T> {
             prepend(data);
             return;
         }
-        if (index == this.size) {
+        if (index == size) {
             append(data);
             return;
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
@@ -144,7 +144,7 @@ public class LinkedListDouble<T> {
         newNode.setPrev(current.getPrev());
         current.getPrev().setNext(newNode);
         current.setPrev(newNode);
-        this.size++;
+        size++;
     }
 
     public T removeFirst() {
@@ -152,14 +152,14 @@ public class LinkedListDouble<T> {
             System.out.println("List is empty");
             return null;
         }
-        T removed = this.head.getData();
-        this.head = this.head.getNext();
-        if (this.head != null) {
-            this.head.setPrev(null);
+        T removed = head.getData();
+        head = head.getNext();
+        if (head != null) {
+            head.setPrev(null);
         } else {
-            this.tail = null;
+            tail = null;
         }
-        this.size--;
+        size--;
         return removed;
     }
 
@@ -168,45 +168,45 @@ public class LinkedListDouble<T> {
             System.out.println("List is empty");
             return null;
         }
-        T removed = this.tail.getData();
-        this.tail = this.tail.getPrev();
-        if (this.tail != null) {
-            this.tail.setNext(null);
+        T removed = tail.getData();
+        tail = tail.getPrev();
+        if (tail != null) {
+            tail.setNext(null);
         } else {
-            this.head = null;
+            head = null;
         }
-        this.size--;
+        size--;
         return removed;
     }
 
     public T remove(int index) {
-        if (index < 0 || index >= this.size) {
+        if (index < 0 || index >= size) {
             System.out.println("Index out of bounds");
             return null;
         }
         if (index == 0) {
             return removeFirst();
         }
-        if (index == this.size - 1) {
+        if (index == size - 1) {
             return removeLast();
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
         T removed = current.getData();
         current.getPrev().setNext(current.getNext());
         current.getNext().setPrev(current.getPrev());
-        this.size--;
+        size--;
         return removed;
     }
 
     public T get(int index) {
-        if (index < 0 || index >= this.size) {
+        if (index < 0 || index >= size) {
             System.out.println("Index out of bounds");
             return null;
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
@@ -214,11 +214,11 @@ public class LinkedListDouble<T> {
     }
 
     public void set(int index, T data) {
-        if (index < 0 || index >= this.size) {
+        if (index < 0 || index >= size) {
             System.out.println("Index out of bounds");
             return;
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
@@ -226,9 +226,9 @@ public class LinkedListDouble<T> {
     }
 
     public void clear() {
-        this.head = null;
-        this.tail = null;
-        this.size = 0;
+        head = null;
+        tail = null;
+        size = 0;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class LinkedListDouble<T> {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Node current = this.head;
+        Node current = head;
         while (current != null) {
             sb.append(current.getData());
             if (current.getNext() != null) {

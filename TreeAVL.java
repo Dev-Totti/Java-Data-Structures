@@ -1,12 +1,11 @@
 public class TreeAVL<T extends Comparable<T>> {
-    private class Node {
-        // Node - Attributes
+    // Node - Subclass
+    public class Node {
         private T data;
         private Node left;
         private Node right;
         private int height;
 
-        // Node - Constructors
         public Node(T data) {
             this.data = data;
             this.left = null;
@@ -14,21 +13,24 @@ public class TreeAVL<T extends Comparable<T>> {
             this.height = 0;
         }
 
-        // Node - Getters and Setters
         public T getData() {
-            return this.data;
+            return data;
         }
 
         public Node getLeft() {
-            return this.left;
+            return left;
         }
 
         public Node getRight() {
-            return this.right;
+            return right;
         }
 
         public int getHeight() {
-            return this.height;
+            return height;
+        }
+
+        public void setData(T data) {
+            this.data = data;
         }
 
         public void setLeft(Node left) {
@@ -39,52 +41,121 @@ public class TreeAVL<T extends Comparable<T>> {
             this.right = right;
         }
 
-        public void setData(T data) {
-            this.data = data;
-        }
-
         public void setHeight(int height) {
             this.height = height;
         }
 
-        // Node - Methods
         public boolean isLeaf() {
-            return this.left == null && this.right == null;
+            return left == null && right == null;
         }
 
         public boolean hasLeft() {
-            return this.left != null;
+            return left != null;
         }
 
         public boolean hasRight() {
-            return this.right != null;
+            return right != null;
+        }
+
+        public boolean hasBoth() {
+            return left != null && right != null;
         }
 
         @Override
         public String toString() {
-            return this.data.toString();
+            return data.toString();
         }
 
     }
 
     // Attributes
-    private Node root;
+    public Node root;
 
     // Constructors
     public TreeAVL() {
         this.root = null;
     }
 
-    // Getters and Setters
-    public Node getRoot() {
-        return this.root;
+    // Methods - CRUD
+    public void insert(T data) {
+        root = insert(root, data);
     }
 
-    public void setRoot(Node root) {
-        this.root = root;
+    private Node insert(Node current, T data) {
+        if (current == null) {
+            return new Node(data);
+        }
+
+        int compare = current.getData().compareTo(data);
+        if (compare < 0) {
+            current.setRight(insert(current.getRight(), data));
+        } else if (compare > 0) {
+            current.setLeft(insert(current.getLeft(), data));
+        }
+        return balance(current);
     }
 
-    // Methods - AVL
+    // Remove using successor
+    public void remove(T data) {
+        root = remove(root, data);
+    }
+
+    private Node remove(Node current, T data) {
+        if (current == null) {
+            return null;
+        }
+
+        int compare = data.compareTo(current.getData());
+        if (compare < 0) {
+            current.setLeft(remove(current.getLeft(), data));
+        } else if (compare > 0) {
+            current.setRight(remove(current.getRight(), data));
+        } else {
+            if (current.isLeaf()) {
+                return null;
+            } else if (current.hasBoth()) {
+                Node sucessor = findMin(current.getRight());
+                current.setData(sucessor.getData());
+                current.setRight(remove(current.getRight(), sucessor.getData()));
+            } else {
+                current = current.getLeft() != null ? current.getLeft() : current.getRight();
+            }
+        }
+
+        return balance(current);
+    }
+
+    // Delete using predecessor
+    public void delete(T data) {
+        root = delete(root, data);
+    }
+
+    private Node delete(Node current, T data) {
+        if (current == null) {
+            return null;
+        }
+
+        int compare = data.compareTo(current.getData());
+        if (compare < 0) {
+            current.setLeft(delete(current.getLeft(), data));
+        } else if (compare > 0) {
+            current.setRight(delete(current.getRight(), data));
+        } else {
+            if (current.isLeaf()) {
+                return null;
+            } else if (current.hasBoth()) {
+                Node predecessor = findMax(current.getLeft());
+                current.setData(predecessor.getData());
+                current.setLeft(delete(current.getLeft(), predecessor.getData()));
+            } else {
+                current = current.getLeft() != null ? current.getLeft() : current.getRight();
+            }
+        }
+
+        return balance(current);
+    }
+
+    // Methods - AVL Tree
     private int height(Node node) {
         return node == null ? -1 : node.getHeight();
     }
@@ -135,58 +206,9 @@ public class TreeAVL<T extends Comparable<T>> {
         return node;
     }
 
-    // Methods - CRUD
-    public void insert(T data) {
-        this.root = insert(this.root, data);
-    }
-
-    private Node insert(Node current, T data) {
-        if (current == null) {
-            return new Node(data);
-        }
-
-        int compare = current.getData().compareTo(data);
-        if (compare < 0) {
-            current.setRight(insert(current.getRight(), data));
-        } else if (compare > 0) {
-            current.setLeft(insert(current.getLeft(), data));
-        }
-        return balance(current);
-    }
-
-    public void remove(T data) {
-        this.root = remove(this.root, data);
-    }
-
-    private Node remove(Node current, T data) {
-        if (current == null) {
-            return null;
-        }
-
-        int compare = current.getData().compareTo(data);
-        if (compare < 0) {
-            current.setRight(remove(current.getRight(), data));
-        } else if (compare > 0) {
-            current.setLeft(remove(current.getLeft(), data));
-        } else {
-            if (current.isLeaf()) {
-                return null;
-            } else if (!current.hasLeft()) {
-                return current.getRight();
-            } else if (!current.hasRight()) {
-                return current.getLeft();
-            } else {
-                Node min = min(current.getRight());
-                current.setData(min.getData());
-                current.setRight(remove(current.getRight(), min.getData()));
-            }
-        }
-        return balance(current);
-    }
-
-    // Methods - Utilities
+    // Methods - Binary Search Tree
     public boolean isEmpty() {
-        return this.root == null;
+        return root == null;
     }
 
     public boolean contains(T data) {
@@ -194,7 +216,7 @@ public class TreeAVL<T extends Comparable<T>> {
     }
 
     public Node search(T data) {
-        return search(this.root, data);
+        return search(root, data);
     }
 
     private Node search(Node current, T data) {
@@ -202,118 +224,89 @@ public class TreeAVL<T extends Comparable<T>> {
             return null;
         }
 
-        int compare = current.getData().compareTo(data);
+        int compare = data.compareTo(current.getData());
         if (compare < 0) {
-            return search(current.getRight(), data);
-        } else if (compare > 0) {
             return search(current.getLeft(), data);
+        } else if (compare > 0) {
+            return search(current.getRight(), data);
         }
+
         return current;
     }
 
-    public T min() {
-        return min(this.root).getData();
+    public Node findMin() {
+        return findMin(root);
     }
 
-    public T max() {
-        return max(this.root).getData();
-    }
-
-    // Recursive Method
-    private Node min(Node current) {
-        if (current.getLeft() == null) {
+    public Node findMin(Node current) {
+        if (!current.hasLeft()) {
             return current;
         }
-        return min(current.getLeft());
+        return findMin(current.getLeft());
     }
 
-    // Iterative Method
-    private Node max(Node current) {
-        while (current.getRight() != null) {
-            current = current.getRight();
+    public Node findMax() {
+        return findMax(root);
+    }
+
+    public Node findMax(Node current) {
+        if (!current.hasRight()) {
+            return current;
         }
-        return current;
+        return findMax(current.getRight());
     }
 
-    // Methods - Transversal
-    public String preOrder() {
-        LinkedListSingle<T> nodes = new LinkedListSingle<T>();
-        preOrder(this.root, nodes);
-        return nodes.toString();
+    // Methods - Traversal
+    public LinkedListSingle<Node> inOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        inOrder(root, nodes);
+        return nodes;
     }
 
-    public String inOrder() {
-        LinkedListSingle<T> nodes = new LinkedListSingle<T>();
-        inOrder(this.root, nodes);
-        return nodes.toString();
-    }
-
-    public String postOrder() {
-        LinkedListSingle<T> nodes = new LinkedListSingle<T>();
-        postOrder(this.root, nodes);
-        return nodes.toString();
-    }
-
-    // Methods - Transversal - Recursive
-    private void preOrder(Node current, LinkedListSingle<T> nodes) {
+    private void inOrder(Node current, LinkedListSingle<Node> nodes) {
         if (current != null) {
-            nodes.add(current.getData());
+            inOrder(current.getLeft(), nodes);
+            nodes.add(current);
+            inOrder(current.getRight(), nodes);
+        }
+    }
+
+    public LinkedListSingle<Node> preOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        preOrder(root, nodes);
+        return nodes;
+    }
+
+    private void preOrder(Node current, LinkedListSingle<Node> nodes) {
+        if (current != null) {
+            nodes.add(current);
             preOrder(current.getLeft(), nodes);
             preOrder(current.getRight(), nodes);
         }
     }
 
-    private void inOrder(Node current, LinkedListSingle<T> nodes) {
-        if (current != null) {
-            inOrder(current.getLeft(), nodes);
-            nodes.add(current.getData());
-            inOrder(current.getRight(), nodes);
-        }
+    public LinkedListSingle<Node> postOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        postOrder(root, nodes);
+        return nodes;
     }
 
-    private void postOrder(Node current, LinkedListSingle<T> nodes) {
+    private void postOrder(Node current, LinkedListSingle<Node> nodes) {
         if (current != null) {
             postOrder(current.getLeft(), nodes);
             postOrder(current.getRight(), nodes);
-            nodes.add(current.getData());
+            nodes.add(current);
         }
     }
 
-    public void print() {
-        QueueLinkedList<Node> queue = new QueueLinkedList<Node>();
-        queue.enqueue(this.root);
-        queue.enqueue(null);
+    public LinkedListSingle<Node> bfs() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        QueueLinkedList<Node> queue = new QueueLinkedList<>();
+        queue.enqueue(root);
 
         while (!queue.isEmpty()) {
             Node current = queue.dequeue();
-            if (current == null) {
-                System.out.print("| ");
-                continue;
-            }
-
-            String text = current.getData() + " ";
-            System.out.print(text);
-
-            if (current.hasLeft()) {
-                queue.enqueue(current.getLeft());
-            }
-
-            if (current.hasRight()) {
-                queue.enqueue(current.getRight());
-            }
-
-            queue.enqueue(null);
-        }
-    }
-
-    public String bfs() {
-        LinkedListSingle<T> nodes = new LinkedListSingle<T>();
-        QueueLinkedList<Node> queue = new QueueLinkedList<Node>();
-        queue.enqueue(this.root);
-
-        while (!queue.isEmpty()) {
-            Node current = queue.dequeue();
-            nodes.add(current.getData());
+            nodes.add(current);
 
             if (current.hasLeft()) {
                 queue.enqueue(current.getLeft());
@@ -324,17 +317,17 @@ public class TreeAVL<T extends Comparable<T>> {
             }
         }
 
-        return nodes.toString();
+        return nodes;
     }
 
-    public String dfs() {
-        LinkedListSingle<T> nodes = new LinkedListSingle<T>();
-        StackLinkedList<Node> stack = new StackLinkedList<Node>();
-        stack.push(this.root);
+    public LinkedListSingle<Node> dfs() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        StackLinkedList<Node> stack = new StackLinkedList<>();
+        stack.push(root);
 
         while (!stack.isEmpty()) {
             Node current = stack.pop();
-            nodes.add(current.getData());
+            nodes.add(current);
 
             if (current.hasRight()) {
                 stack.push(current.getRight());
@@ -345,12 +338,37 @@ public class TreeAVL<T extends Comparable<T>> {
             }
         }
 
-        return nodes.toString();
+        return nodes;
+    }
+
+    public void print() {
+        QueueLinkedList<Node> queue = new QueueLinkedList<Node>();
+        queue.enqueue(root);
+        queue.enqueue(null);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.dequeue();
+            if (current == null) {
+                System.out.print("| ");
+                continue;
+            }
+
+            System.out.print(current + " ");
+
+            if (current.hasLeft())
+                queue.enqueue(current.left);
+
+            if (current.hasRight())
+                queue.enqueue(current.right);
+
+            queue.enqueue(null);
+        }
+        System.out.println();
     }
 
     @Override
     public String toString() {
-        return bfs();
+        return bfs().toString();
     }
 
 }

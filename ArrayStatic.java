@@ -21,15 +21,15 @@ public class ArrayStatic<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public boolean isFull() {
-        return this.size == this.capacity;
+        return size == capacity;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public void prepend(T element) {

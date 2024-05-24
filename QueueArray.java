@@ -19,34 +19,34 @@ public class QueueArray<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public void enqueue(T data) {
-        this.queue.set(this.size++, data);
+        queue.set(size++, data);
     }
 
     public T dequeue() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        this.size--;
-        return this.queue.remove(0);
+        size--;
+        return queue.remove(0);
     }
 
     public T peek() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        return this.queue.get(0);
+        return queue.get(0);
     }
 
     public String toString() {
-        return this.queue.toString();
+        return queue.toString();
     }
 
 }

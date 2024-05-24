@@ -12,11 +12,11 @@ public class LinkedListSingle<T> {
 
         // Node - Getters
         public T getData() {
-            return this.data;
+            return data;
         }
 
         public Node getNext() {
-            return this.next;
+            return next;
         }
 
         // Node - Setters
@@ -46,16 +46,16 @@ public class LinkedListSingle<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public LinkedListSingle<T> getReversed() {
         LinkedListSingle<T> reversed = new LinkedListSingle<>();
-        Node current = this.head;
+        Node current = head;
         while (current != null) {
             reversed.prepend(current.getData());
             current = current.getNext();
@@ -68,7 +68,7 @@ public class LinkedListSingle<T> {
             return;
         }
         Node prev = null;
-        Node current = this.head;
+        Node current = head;
         Node next = null;
         while (current != null) {
             next = current.getNext();
@@ -76,14 +76,14 @@ public class LinkedListSingle<T> {
             prev = current;
             current = next;
         }
-        this.head = prev;
+        head = prev;
     }
 
     public void prepend(T data) {
         Node newNode = new Node(data);
-        newNode.setNext(this.head);
-        this.head = newNode;
-        this.size++;
+        newNode.setNext(head);
+        head = newNode;
+        size++;
     }
 
     public void append(T data) {
@@ -92,12 +92,12 @@ public class LinkedListSingle<T> {
             return;
         }
         Node newNode = new Node(data);
-        Node current = this.head;
+        Node current = head;
         while (current.getNext() != null) {
             current = current.getNext();
         }
         current.setNext(newNode);
-        this.size++;
+        size++;
     }
 
     public void add(T data) {
@@ -114,13 +114,13 @@ public class LinkedListSingle<T> {
             return;
         }
         Node newNode = new Node(data);
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index - 1; i++) {
             current = current.getNext();
         }
         newNode.setNext(current.getNext());
         current.setNext(newNode);
-        this.size++;
+        size++;
     }
 
     public T removeFirst() {
@@ -128,9 +128,9 @@ public class LinkedListSingle<T> {
             System.out.println("List is empty");
             return null;
         }
-        T removed = this.head.getData();
-        this.head = this.head.getNext();
-        this.size--;
+        T removed = head.getData();
+        head = head.getNext();
+        size--;
         return removed;
     }
 
@@ -142,13 +142,13 @@ public class LinkedListSingle<T> {
         if (size == 1) {
             return removeFirst();
         }
-        Node current = this.head;
+        Node current = head;
         while (current.getNext().getNext() != null) {
             current = current.getNext();
         }
         T removed = current.getNext().getData();
         current.setNext(null);
-        this.size--;
+        size--;
         return removed;
     }
 
@@ -163,13 +163,13 @@ public class LinkedListSingle<T> {
         if (index == size - 1) {
             return removeLast();
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index - 1; i++) {
             current = current.getNext();
         }
         T removed = current.getNext().getData();
         current.setNext(current.getNext().getNext());
-        this.size--;
+        size--;
         return removed;
     }
 
@@ -178,7 +178,7 @@ public class LinkedListSingle<T> {
             System.out.println("Index out of bounds");
             return null;
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
@@ -190,7 +190,7 @@ public class LinkedListSingle<T> {
             System.out.println("Index out of bounds");
             return;
         }
-        Node current = this.head;
+        Node current = head;
         for (int i = 0; i < index; i++) {
             current = current.getNext();
         }
@@ -198,8 +198,8 @@ public class LinkedListSingle<T> {
     }
 
     public void clear() {
-        this.head = null;
-        this.size = 0;
+        head = null;
+        size = 0;
     }
 
     @Override
@@ -209,7 +209,7 @@ public class LinkedListSingle<T> {
         }
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        Node current = this.head;
+        Node current = head;
         while (current.getNext() != null) {
             sb.append(current.getData());
             sb.append(", ");

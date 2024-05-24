@@ -19,55 +19,55 @@ public class DequeArray<T> {
 
     // Methods
     public boolean isEmpty() {
-        return this.size == 0;
+        return size == 0;
     }
 
     public int size() {
-        return this.size;
+        return size;
     }
 
     public void addFirst(T data) {
-        this.deque.prepend(data);
-        this.size++;
+        deque.prepend(data);
+        size++;
     }
 
     public void addLast(T data) {
-        this.deque.add(data);
-        this.size++;
+        deque.add(data);
+        size++;
     }
 
     public T removeFirst() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        this.size--;
-        return this.deque.remove(0);
+        size--;
+        return deque.remove(0);
     }
 
     public T removeLast() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        this.size--;
-        return this.deque.remove(this.size);
+        size--;
+        return deque.remove(size);
     }
 
     public T peekFirst() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        return this.deque.get(0);
+        return deque.get(0);
     }
 
     public T peekLast() {
-        if (this.isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
-        return this.deque.get(this.size - 1);
+        return deque.get(size - 1);
     }
 
     public String toString() {
-        return this.deque.toString();
+        return deque.toString();
     }
 
 }

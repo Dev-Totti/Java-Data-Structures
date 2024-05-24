@@ -1,13 +1,12 @@
 public class TreeRB<T extends Comparable<T>> {
-    private class Node {
-        // Node - Attributes
-        T data;
-        Node left;
-        Node right;
-        Node parent;
-        boolean red;
+    // Node - Subclass
+    public class Node {
+        private T data;
+        private Node left;
+        private Node right;
+        private Node parent;
+        private boolean red;
 
-        // Node - Constructors
         public Node(T data) {
             this.data = data;
             this.left = null;
@@ -16,266 +15,344 @@ public class TreeRB<T extends Comparable<T>> {
             this.red = true;
         }
 
-        // Node - Methods
+        public T getData() {
+            return data;
+        }
+
+        public Node getLeft() {
+            return left;
+        }
+
+        public Node getRight() {
+            return right;
+        }
+
+        public Node getParent() {
+            return parent;
+        }
+
+        public void setData(T data) {
+            this.data = data;
+        }
+
+        public void setLeft(Node left) {
+            this.left = left;
+        }
+
+        public void setRight(Node right) {
+            this.right = right;
+        }
+
+        public void setParent(Node parent) {
+            this.parent = parent;
+        }
+
+        public boolean isRed() {
+            return red;
+        }
+
+        public boolean isBlack() {
+            return !red;
+        }
+
+        public void setRed() {
+            red = true;
+        }
+
+        public void setBlack() {
+            red = false;
+        }
+
+        public void setColor(boolean red) {
+            this.red = red;
+        }
+
         public boolean isLeaf() {
-            return this.left == null && this.right == null;
+            return left == null && right == null;
         }
 
         public boolean hasLeft() {
-            return this.left != null;
+            return left != null;
         }
 
         public boolean hasRight() {
-            return this.right != null;
+            return right != null;
         }
 
         public boolean isLeft() {
-            return this == this.parent.left;
+            return parent != null && this == parent.left;
         }
 
         public boolean isRight() {
-            return this == this.parent.right;
+            return parent != null && this == parent.right;
+        }
+
+        public boolean hasBoth() {
+            return left != null && right != null;
         }
 
         @Override
         public String toString() {
-            String text = this.data.toString();
-            return text + (this.red ? "(R)" : "(B)");
+            return data.toString() + (red ? "(R)" : "(B)");
         }
 
     }
 
     // Attributes
-    public Node root;
+    private Node root;
 
     // Constructors
     public TreeRB() {
-        this.root = null;
+        root = null;
     }
 
-    // Methods - Insert
+    // Methods - CRUD
     public void insert(T data) {
         Node newNode = new Node(data);
+        Node current = root;
+        Node parent = null;
 
-        if (this.root == null) {
-            this.root = newNode;
-            this.root.red = false;
-            return;
-        }
-
-        Node current = this.root;
         while (current != null) {
-            int compare = newNode.data.compareTo(current.data);
-            if (compare == 0) {
-                return;
-            } else if (compare < 0) {
-                if (!current.hasLeft()) {
-                    current.left = newNode;
-                    newNode.parent = current;
-                    break;
-                }
-                current = current.left;
+            parent = current;
+            int compare = data.compareTo(current.getData());
+            if (compare < 0) {
+                current = current.getLeft();
+            } else if (compare > 0) {
+                current = current.getRight();
             } else {
-                if (current.right == null) {
-                    current.right = newNode;
-                    newNode.parent = current;
-                    break;
-                }
-                current = current.right;
+                return;
             }
         }
 
-        fixInsert(newNode);
+        newNode.setParent(parent);
+        if (parent == null) {
+            root = newNode;
+            root.setBlack();
+        } else if (data.compareTo(parent.getData()) < 0) {
+            parent.setLeft(newNode);
+        } else {
+            parent.setRight(newNode);
+        }
+
+        insertFix(newNode);
     }
 
-    private void fixInsert(Node current) {
-        Node parent = current.parent;
-
-        while (isRed(parent) && parent != this.root) {
-            Node uncle = parent.isLeft() ? parent.parent.right : parent.parent.left;
+    private void insertFix(Node current) {
+        while (isRed(current.getParent())) {
+            Node parent = current.getParent();
+            Node grandparent = parent.getParent();
+            Node uncle = parent.isLeft() ? grandparent.getRight() : grandparent.getLeft();
 
             if (isRed(uncle)) {
-                parent.red = false;
-                uncle.red = false;
-                parent.parent.red = true;
-                current = parent.parent;
-                parent = current.parent;
-                continue;
+                // Case 1
+                parent.setBlack();
+                uncle.setBlack();
+                grandparent.setRed();
+                current = grandparent;
             } else {
                 if (parent.isLeft()) {
                     if (current.isRight()) {
+                        // Case 2
                         current = parent;
                         rotateLeft(current);
-                        parent = current.parent;
                     }
-                    parent.red = false;
-                    parent.parent.red = true;
-                    rotateRight(parent.parent);
+                    // Case 3
+                    parent.setBlack();
+                    grandparent.setRed();
+                    rotateRight(grandparent);
                 } else {
                     if (current.isLeft()) {
+                        // Case 2
                         current = parent;
                         rotateRight(current);
-                        parent = current.parent;
                     }
-                    parent.red = false;
-                    parent.parent.red = true;
-                    rotateLeft(parent.parent);
+                    // Case 3
+                    parent.setBlack();
+                    grandparent.setRed();
+                    rotateLeft(grandparent);
                 }
             }
-
         }
-
-        this.root.red = false;
+        // Case 0
+        root.setBlack();
     }
 
-    // Remove Methods
+    // Remove using successor
     public void remove(T data) {
-        Node toDelete = search(data);
-        if (toDelete != null) {
-            remove(toDelete);
+        Node toRemove = search(data);
+        if (toRemove != null) {
+            remove(toRemove);
         }
     }
 
-    public void remove(Node current) {
+    private void remove(Node current) {
         if (current.isLeaf()) {
-            if (!isRed(current)) {
-                fixDelete(current);
+            if (current.isBlack()) {
+                removeFix(current);
             }
             transplant(current, null);
-        } else if (current.hasLeft() && current.hasRight()) {
-            Node predecessor = min(current.right);
-            current.data = predecessor.data;
-            remove(predecessor);
+        } else if (current.hasBoth()) {
+            Node sucessor = findMin(current.getRight());
+            current.setData(sucessor.getData());
+            remove(sucessor);
         } else {
-            Node child = current.hasLeft() ? current.left : current.right;
+            Node child = current.hasLeft() ? current.getLeft() : current.getRight();
             transplant(current, child);
-            if (!isRed(current)) {
-                fixDelete(child);
+            if (current.isBlack()) {
+                removeFix(child);
             }
         }
     }
 
-    private void fixDelete(Node current) {
-        Node sibling = null;
-        while (current != this.root && !isRed(current)) {
-            if (current.isLeft()) {
-                sibling = current.parent.right;
-                if (isRed(sibling)) {
-                    sibling.red = false;
-                    current.parent.red = true;
-                    rotateLeft(current.parent);
-                    sibling = current.parent.right;
-                }
-                if (!isRed(sibling.left) && !isRed(sibling.right)) {
-                    sibling.red = true;
-                    current = current.parent;
-                } else {
-                    if (!isRed(sibling.right)) {
-                        sibling.left.red = false;
-                        sibling.red = true;
-                        rotateRight(sibling);
-                        sibling = current.parent.right;
-                    }
-                    sibling.red = current.parent.red;
-                    current.parent.red = false;
-                    sibling.right.red = false;
-                    rotateLeft(current.parent);
-                    current = this.root;
-                }
-            } else {
-                sibling = current.parent.left;
-                if (isRed(sibling)) {
-                    sibling.red = false;
-                    current.parent.red = true;
-                    rotateRight(current.parent);
-                    sibling = current.parent.left;
-                }
-                if (!isRed(sibling.left) && !isRed(sibling.right)) {
-                    sibling.red = true;
-                    current = current.parent;
-                } else {
-                    if (!isRed(sibling.left)) {
-                        sibling.right.red = false;
-                        sibling.red = true;
-                        rotateLeft(sibling);
-                        sibling = current.parent.left;
-                    }
-                    sibling.red = current.parent.red;
-                    current.parent.red = false;
-                    sibling.left.red = false;
-                    rotateRight(current.parent);
-                    current = this.root;
-                }
+    // Delete using predecessor
+    public void delete(T data) {
+        Node toDelete = search(data);
+        if (toDelete != null) {
+            delete(toDelete);
+        }
+    }
+
+    private void delete(Node current) {
+        if (current.isLeaf()) {
+            if (current.isBlack()) {
+                removeFix(current);
+            }
+            transplant(current, null);
+        } else if (current.hasBoth()) {
+            Node predecessor = findMax(current.getLeft());
+            current.setData(predecessor.getData());
+            delete(predecessor);
+        } else {
+            Node child = current.hasLeft() ? current.getLeft() : current.getRight();
+            transplant(current, child);
+            if (current.isBlack()) {
+                removeFix(child);
             }
         }
-        current.red = false;
+    }
+
+    private void removeFix(Node current) {
+        while (current != root && current.isBlack()) {
+            Node parent = current.getParent();
+            Node sibling = current.isLeft() ? parent.getRight() : parent.getLeft();
+            Node w1 = current.isLeft() ? sibling.getLeft() : sibling.getRight();
+            Node w2 = current.isLeft() ? sibling.getRight() : sibling.getLeft();
+
+            if (isRed(sibling)) {
+                // Case 1
+                sibling.setBlack();
+                parent.setRed();
+                if (current.isLeft()) {
+                    rotateLeft(parent);
+                    sibling = parent.getRight();
+                } else {
+                    rotateRight(parent);
+                    sibling = parent.getLeft();
+                }
+            }
+
+            if (!isRed(w1) && !isRed(w2)) {
+                // Case 2
+                sibling.setRed();
+                current = parent;
+            } else {
+                if (!isRed(w2)) {
+                    // Case 3
+                    sibling.setRed();
+                    w1.setBlack();
+
+                    if (current.isLeft()) {
+                        rotateRight(sibling);
+                        sibling = parent.getRight();
+                    } else {
+                        rotateLeft(sibling);
+                        sibling = parent.getLeft();
+                    }
+                }
+
+                // Case 4
+                sibling.setColor(parent.isRed());
+                parent.setBlack();
+                w2.setBlack();
+
+                if (current.isLeft()) {
+                    rotateLeft(parent);
+                } else {
+                    rotateRight(parent);
+                }
+                current = root;
+            }
+        }
+        // Case 0
+        current.setBlack();
     }
 
     // Methods - Red-Black Tree
     private void transplant(Node oldNode, Node newNode) {
-        if (oldNode.parent == null) {
-            this.root = newNode;
+        if (oldNode.getParent() == null) {
+            root = newNode;
         } else if (oldNode.isLeft()) {
-            oldNode.parent.left = newNode;
+            oldNode.getParent().setLeft(newNode);
         } else {
-            oldNode.parent.right = newNode;
+            oldNode.getParent().setRight(newNode);
         }
+
         if (newNode != null) {
-            newNode.parent = oldNode.parent;
+            newNode.setParent(oldNode.getParent());
         }
     }
 
-    private boolean isRed(Node node) {
-        return node != null && node.red;
+    private boolean isRed(Node current) {
+        return current != null && current.isRed();
     }
 
-    private void rotateLeft(Node x) {
-        Node y = x.right;
-        x.right = y.left;
+    private void rotateLeft(Node current) {
+        Node right = current.getRight();
+        current.setRight(right.getLeft());
 
-        if (y.hasLeft()) {
-            y.left.parent = x;
+        if (right.hasLeft()) {
+            right.getLeft().setParent(current);
         }
 
-        y.parent = x.parent;
+        right.setParent(current.getParent());
 
-        if (x.parent == null) {
-            this.root = y;
-        } else if (x.isLeft()) {
-            x.parent.left = y;
+        if (current.getParent() == null) {
+            root = right;
+        } else if (current.isLeft()) {
+            current.getParent().setLeft(right);
         } else {
-            x.parent.right = y;
+            current.getParent().setRight(right);
         }
 
-        y.left = x;
-        x.parent = y;
+        right.setLeft(current);
+        current.setParent(right);
     }
 
-    private void rotateRight(Node x) {
-        Node y = x.left;
-        x.left = y.right;
+    private void rotateRight(Node current) {
+        Node left = current.getLeft();
+        current.setLeft(left.getRight());
 
-        if (y.hasRight()) {
-            y.right.parent = x;
+        if (left.hasRight()) {
+            left.getRight().setParent(current);
         }
 
-        y.parent = x.parent;
+        left.setParent(current.getParent());
 
-        if (x.parent == null) {
-            this.root = y;
-        } else if (x == x.parent.right) {
-            x.parent.right = y;
+        if (current.getParent() == null) {
+            root = left;
+        } else if (current.isRight()) {
+            current.getParent().setRight(left);
         } else {
-            x.parent.left = y;
+            current.getParent().setLeft(left);
         }
 
-        y.right = x;
-        x.parent = y;
+        left.setRight(current);
+        current.setParent(left);
     }
 
-    // Methods - Utilities
+    // Methods - Binary Search Tree
     public boolean isEmpty() {
-        return this.root == null;
+        return root == null;
     }
 
     public boolean contains(T data) {
@@ -283,7 +360,7 @@ public class TreeRB<T extends Comparable<T>> {
     }
 
     public Node search(T data) {
-        return search(this.root, data);
+        return search(root, data);
     }
 
     private Node search(Node current, T data) {
@@ -291,84 +368,126 @@ public class TreeRB<T extends Comparable<T>> {
             return null;
         }
 
-        int compare = data.compareTo(current.data);
+        int compare = data.compareTo(current.getData());
         if (compare < 0) {
-            return search(current.left, data);
+            return search(current.getLeft(), data);
         } else if (compare > 0) {
-            return search(current.right, data);
-        } else {
-            return current;
+            return search(current.getRight(), data);
         }
-    }
 
-    public T min() {
-        return min(this.root).data;
-    }
-
-    private Node min(Node current) {
-        if (current.left == null) {
-            return current;
-        }
-        return min(current.left);
-    }
-
-    public T max() {
-        return max(this.root).data;
-    }
-
-    private Node max(Node current) {
-        while (current.right != null) {
-            current = current.right;
-        }
         return current;
     }
 
-    // Methods - Transversal
-    public String preOrder() {
-        LinkedListSingle<Node> nodes = new LinkedListSingle<Node>();
-        preOrder(this.root, nodes);
-        return nodes.toString();
+    public Node findMin() {
+        return findMin(root);
+    }
+
+    public Node findMin(Node current) {
+        if (!current.hasLeft()) {
+            return current;
+        }
+        return findMin(current.getLeft());
+    }
+
+    public Node findMax() {
+        return findMax(root);
+    }
+
+    public Node findMax(Node current) {
+        if (!current.hasRight()) {
+            return current;
+        }
+        return findMax(current.getRight());
+    }
+
+    // Methods - Traversal
+    public LinkedListSingle<Node> inOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        inOrder(root, nodes);
+        return nodes;
+    }
+
+    private void inOrder(Node current, LinkedListSingle<Node> nodes) {
+        if (current != null) {
+            inOrder(current.getLeft(), nodes);
+            nodes.add(current);
+            inOrder(current.getRight(), nodes);
+        }
+    }
+
+    public LinkedListSingle<Node> preOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        preOrder(root, nodes);
+        return nodes;
     }
 
     private void preOrder(Node current, LinkedListSingle<Node> nodes) {
         if (current != null) {
             nodes.add(current);
-            preOrder(current.left, nodes);
-            preOrder(current.right, nodes);
+            preOrder(current.getLeft(), nodes);
+            preOrder(current.getRight(), nodes);
         }
     }
 
-    public String inOrder() {
-        LinkedListSingle<Node> nodes = new LinkedListSingle<Node>();
-        inOrder(this.root, nodes);
-        return nodes.toString();
-    }
-
-    private void inOrder(Node current, LinkedListSingle<Node> nodes) {
-        if (current != null) {
-            inOrder(current.left, nodes);
-            nodes.add(current);
-            inOrder(current.right, nodes);
-        }
-    }
-
-    public String postOrder() {
-        LinkedListSingle<Node> nodes = new LinkedListSingle<Node>();
-        postOrder(this.root, nodes);
-        return nodes.toString();
+    public LinkedListSingle<Node> postOrder() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        postOrder(root, nodes);
+        return nodes;
     }
 
     private void postOrder(Node current, LinkedListSingle<Node> nodes) {
         if (current != null) {
-            postOrder(current.left, nodes);
-            postOrder(current.right, nodes);
+            postOrder(current.getLeft(), nodes);
+            postOrder(current.getRight(), nodes);
             nodes.add(current);
         }
     }
 
+    public LinkedListSingle<Node> bfs() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        QueueLinkedList<Node> queue = new QueueLinkedList<>();
+        queue.enqueue(root);
+
+        while (!queue.isEmpty()) {
+            Node current = queue.dequeue();
+            nodes.add(current);
+
+            if (current.hasLeft()) {
+                queue.enqueue(current.getLeft());
+            }
+
+            if (current.hasRight()) {
+                queue.enqueue(current.getRight());
+            }
+        }
+
+        return nodes;
+    }
+
+    public LinkedListSingle<Node> dfs() {
+        LinkedListSingle<Node> nodes = new LinkedListSingle<>();
+        StackLinkedList<Node> stack = new StackLinkedList<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            Node current = stack.pop();
+            nodes.add(current);
+
+            if (current.hasRight()) {
+                stack.push(current.getRight());
+            }
+
+            if (current.hasLeft()) {
+                stack.push(current.getLeft());
+            }
+        }
+
+        return nodes;
+    }
+
     public void print() {
         QueueLinkedList<Node> queue = new QueueLinkedList<Node>();
-        queue.enqueue(this.root);
+        queue.enqueue(root);
         queue.enqueue(null);
 
         while (!queue.isEmpty()) {
@@ -391,45 +510,9 @@ public class TreeRB<T extends Comparable<T>> {
         System.out.println();
     }
 
-    public String bfs() {
-        LinkedListSingle<Node> nodes = new LinkedListSingle<Node>();
-        QueueLinkedList<Node> queue = new QueueLinkedList<Node>();
-        queue.enqueue(this.root);
-
-        while (!queue.isEmpty()) {
-            Node current = queue.dequeue();
-            nodes.add(current);
-
-            if (current.hasLeft())
-                queue.enqueue(current.left);
-
-            if (current.hasRight())
-                queue.enqueue(current.right);
-        }
-        return nodes.toString();
-    }
-
-    public String dfs() {
-        LinkedListSingle<Node> nodes = new LinkedListSingle<Node>();
-        StackLinkedList<Node> stack = new StackLinkedList<Node>();
-        stack.push(this.root);
-
-        while (!stack.isEmpty()) {
-            Node current = stack.pop();
-            nodes.add(current);
-
-            if (current.hasRight())
-                stack.push(current.right);
-
-            if (current.hasLeft())
-                stack.push(current.left);
-        }
-        return nodes.toString();
-    }
-
     @Override
     public String toString() {
-        return bfs();
+        return bfs().toString();
     }
 
 }
