@@ -306,48 +306,46 @@ public class TreeRB<T extends Comparable<T>> {
         return current != null && current.isRed();
     }
 
-    private void rotateLeft(Node current) {
-        Node right = current.getRight();
-        current.setRight(right.getLeft());
+    private void rotateLeft(Node node) {
+        Node right = node.getRight();
 
+        node.setRight(right.getLeft());
         if (right.hasLeft()) {
-            right.getLeft().setParent(current);
+            right.getLeft().setParent(node);
         }
 
-        right.setParent(current.getParent());
-
-        if (current.getParent() == null) {
+        right.setParent(node.getParent());
+        if (node.getParent() == null) {
             root = right;
-        } else if (current.isLeft()) {
-            current.getParent().setLeft(right);
+        } else if (node.isLeft()) {
+            node.getParent().setLeft(right);
         } else {
-            current.getParent().setRight(right);
+            node.getParent().setRight(right);
         }
 
-        right.setLeft(current);
-        current.setParent(right);
+        right.setLeft(node);
+        node.setParent(right);
     }
 
-    private void rotateRight(Node current) {
-        Node left = current.getLeft();
-        current.setLeft(left.getRight());
+    private void rotateRight(Node node) {
+        Node left = node.getLeft();
 
+        node.setLeft(left.getRight());
         if (left.hasRight()) {
-            left.getRight().setParent(current);
+            left.getRight().setParent(node);
         }
 
-        left.setParent(current.getParent());
-
-        if (current.getParent() == null) {
+        left.setParent(node.getParent());
+        if (node.getParent() == null) {
             root = left;
-        } else if (current.isRight()) {
-            current.getParent().setRight(left);
+        } else if (node.isLeft()) {
+            node.getParent().setLeft(left);
         } else {
-            current.getParent().setLeft(left);
+            node.getParent().setRight(left);
         }
 
-        left.setRight(current);
-        current.setParent(left);
+        left.setRight(node);
+        node.setParent(left);
     }
 
     // Methods - Binary Search Tree
